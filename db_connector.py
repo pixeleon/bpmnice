@@ -2,11 +2,11 @@ from sqlalchemy import create_engine, text
 
 import os
 
-username = os.getenv("DB_USERNAME")
-password = os.getenv("DB_PASSWORD")
-schema = os.getenv("DB_SCHEMA")
-host = os.getenv("DB_HOST")
-ssl_ca = os.getenv("SSL_CA_PATH")
+username = os.getenv("DATABASE_USERNAME")
+password = os.getenv("DATABASE_PASSWORD")
+schema = os.getenv("DATABASE_NAME")
+host = os.getenv("DATABASE_HOST")
+ssl_ca = os.getenv("DATABASE_SSL_CA")
 
 db_url = f"mysql+pymysql://{username}:{password}@{host}:3306/{schema}"
 
