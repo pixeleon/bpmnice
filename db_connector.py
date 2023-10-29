@@ -14,7 +14,9 @@ ssl_config = {"ssl": {"ssl_ca": ssl_ca}}
 
 engine = create_engine(db_url, connect_args=ssl_config)
 
-with engine.connect() as conn:
-    result = conn.execute(text("select * from analysis_result"))
-    result_all = result.all()
-    print(result_all)
+
+def get_all_results():
+    with engine.connect() as conn:
+        result = conn.execute(text("select * from analysis_result"))
+        rows = [row._asdict() for row in result]
+        return rows

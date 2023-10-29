@@ -1,40 +1,20 @@
 from flask import Flask, render_template, jsonify
 
-app = Flask(__name__)
+import main
 
-RESULTS = [
-    {
-        'id': 1,
-        'score': 0.66,
-        'filename': 'model1_ex.bpmn',
-        'totalTasks': 15,
-        'invalidTasks': 5
-    },
-    {
-        'id': 2,
-        'score': 0.8,
-        'filename': 'model1_ex.bpmn',
-        'totalTasks': 15,
-        'invalidTasks': 3
-    },
-    {
-        'id': 3,
-        'score': 1.0,
-        'filename': 'model3.bpmn',
-        'totalTasks': 11,
-        'invalidTasks': 11
-    }
-]
+app = Flask(__name__)
 
 
 @app.route("/")
 def hello():
-    return render_template('home.html', results=RESULTS)
+    results = main.load_results()
+    return render_template('home.html', results=results)
 
 
 @app.route("/api/history")
 def get_history():
-    return jsonify(RESULTS)
+    results = main.load_results()
+    return jsonify(results)
 
 
 if __name__ == '__main__':

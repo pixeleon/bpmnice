@@ -6,9 +6,7 @@ import nltk
 from nltk import word_tokenize
 from nltk.corpus import wordnet
 
-# nltk.download()
-nltk.download('punkt')
-nltk.download('wordnet')
+import db_connector
 
 
 def extract_activity_labels(bpmn_file):
@@ -91,8 +89,14 @@ def calculate_file_textual_quality(bpmn_file_path):
     return calculate_labels_quality(labels)
 
 
-# Press the green button in the gutter to run the script.
+def load_results():
+    return db_connector.get_all_results()
+
+
 if __name__ == '__main__':
+    nltk.download('punkt')
+    nltk.download('wordnet')
+
     project_root = os.path.abspath(os.path.dirname(__file__))
 
     for root, dirs, files in os.walk('set_4'):
