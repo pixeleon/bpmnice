@@ -18,13 +18,18 @@
     <h2 class="mt-5 text-center">Analyze textual quality of your BPMN model</h2>
 
     <h4 class="mt-4">Input your BPMN file</h4>
-    <input class="form-control" type="file" id="fileInput" required>
-    <button class="btn btn-primary w-100 mt-3">Analyze file</button>
+    <form id="fileUploadForm" enctype="multipart/form-data">
+        <input class="form-control" type="file" id="fileInput" name="fileInput">
+        <button class="btn btn-primary w-100 mt-3" type="submit" id="fileUploadButton">Analyze file</button>
+    </form>
+
 
     <h4 class="mt-4">Analysis results</h4>
     <textarea class="form-control" id="results" rows="5" readonly
               placeholder="File analysis results printed here" style="font-family: Consolas, serif">
     </textarea>
+
+    <script src="../static/script.js"></script>
 
     <h4 class="mt-4">Analysis history</h4>
     <div>

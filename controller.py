@@ -1,4 +1,4 @@
-from flask import Flask, render_template, jsonify
+from flask import Flask, render_template, jsonify, request
 
 import main
 
@@ -15,6 +15,24 @@ def hello():
 def get_history():
     results = main.load_results()
     return jsonify(results)
+
+
+@app.route('/upload', methods=['POST'])
+def upload_file():
+    if 'fileInput' not in request.files:
+        return jsonify({'error': 'No file part in upload request'})
+
+    file = request.files['fileInput']
+
+    if file.filename == '':
+        return jsonify({'error': 'No selected file in upload request'})
+
+    if not file.filename.endswith('.bpmn'):
+        return jsonify({'error': 'Invalid file extension in upload request'})
+
+    if file:
+        print('file submitted: ', file.filename)
+        return 'file received: ' + file.filename
 
 
 if __name__ == '__main__':
