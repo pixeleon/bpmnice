@@ -46,8 +46,8 @@ def calculate_labels_score(labels):
     return score_by_label
 
 
-def print_invalid_labels(labels_score):
-    invalid_labels = [e[0] for e in labels_score if e[1] < 1]
+def print_invalid_labels(scores_by_label):
+    invalid_labels = [label for label, score in scores_by_label.items() if score < 0]
     if len(invalid_labels) > 0:
         print("Invalid labels: ", ", ".join(invalid_labels))
 
@@ -92,8 +92,6 @@ def analyze_file(bpmn_file):
     print("Activity labels: ", labels)
     total_tasks = len(labels)
     score_by_labels = calculate_labels_score(labels)
-    print_invalid_labels(score_by_labels)
-
     total_score = get_total_labels_score(score_by_labels)
     invalid_tasks = get_invalid_labels_count(score_by_labels)
     average_score = total_score / total_tasks
