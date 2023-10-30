@@ -16,7 +16,8 @@ def extract_activity_labels(bpmn_file):
         tree_root = tree.getroot()
 
         bpmn_namespace = {'bpmn': 'http://www.omg.org/spec/BPMN/20100524/MODEL'}
-        activity_xpath = '//bpmn:task | //bpmn:userTask | //bpmn:serviceTask | //bpmn:subProcess'
+        activity_xpath = '//bpmn:task | //bpmn:userTask | //bpmn:serviceTask | //bpmn:manualTask |' \
+                         ' //bpmn:businessRuleTask | //bpmn:scriptTask | //bpmn:sendTask | //bpmn:subProcess'
         activity_elements = tree_root.xpath(activity_xpath, namespaces=bpmn_namespace)
 
         labels = [get_activity_label(activity) for activity in activity_elements]
