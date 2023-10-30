@@ -7,6 +7,8 @@ import nltk
 from nltk import word_tokenize
 from nltk.corpus import wordnet
 
+import storage
+
 nltk.download('punkt')
 nltk.download('wordnet')
 
@@ -33,19 +35,15 @@ def get_activity_label(activity):
     return re.sub(r'[\n\r\t]', ' ', activity.get('name'))
 
 
-def calculate_labels_quality(labels):
-    total_correspondence = 0
-    score_by_label = []
+def calculate_labels_score(labels):
+    score_by_label = {}
 
     for label in labels:
         tokens = word_tokenize(label)
-        correspondence = get_label_correspondence(tokens)
-        score_by_label.append((label, correspondence))
-        total_correspondence += correspondence
+        score = get_label_score(tokens)
+        score_by_label[label] = score
 
-    print_invalid_labels(score_by_label)
-
-    return total_correspondence / len(labels)
+    return score_by_label
 
 
 def print_invalid_labels(labels_score):
@@ -54,7 +52,7 @@ def print_invalid_labels(labels_score):
         print("Invalid labels: ", ", ".join(invalid_labels))
 
 
-def get_label_correspondence(tokens):
+def get_label_score(tokens):
     if len(tokens) < 2:
         return 0
 
@@ -74,25 +72,56 @@ def get_label_correspondence(tokens):
     return 1 if are_object_tokens_nouns else 0
 
 
-def is_token_noun(second_token):
-    synsets = wordnet.synsets(second_token)
+def is_token_noun(token):
+    synsets = wordnet.synsets(token)
     return any(synset.pos() == 'n' for synset in synsets)
 
 
-def is_token_verb(first_token):
-    synsets = wordnet.synsets(first_token)
+def is_token_verb(token):
+    synsets = wordnet.synsets(token)
     return any(synset.pos() == 'v' for synset in synsets)
 
 
-def is_token_not_verb(first_token):
-    synsets = wordnet.synsets(first_token)
+def is_token_not_verb(token):
+    synsets = wordnet.synsets(token)
     return any(synset.pos() != 'v' for synset in synsets)
 
 
-def calculate_file_textual_quality(bpmn_file_path):
-    labels = extract_activity_labels(bpmn_file_path)
+def analyze_file(bpmn_file):
+    labels = extract_activity_labels(bpmn_file)
     print("Activity labels: ", labels)
-    return calculate_labels_quality(labels)
+    total_tasks = len(labels)
+    score_by_labels = calculate_labels_score(labels)
+    print_invalid_labels(score_by_labels)
+
+    total_score = get_total_labels_score(score_by_labels)
+    invalid_tasks = get_invalid_labels_count(score_by_labels)
+    average_score = total_score / total_tasks
+
+    storage.save_result(bpmn_file.filename, average_score, total_tasks, invalid_tasks)
+
+    return {
+        'filename:': bpmn_file.filename,
+        'score': average_score,
+        'totalTasks': total_tasks,
+        'invalidTasks': invalid_tasks,
+        'labels': labels
+    }
+
+
+def get_invalid_labels_count(score_by_labels):
+    invalid_labels = 0
+    for key, value in score_by_labels.items():
+        if value < 1:
+            invalid_labels += 1
+    return invalid_labels
+
+
+def get_total_labels_score(score_by_labels):
+    score = 0
+    for v in score_by_labels.values():
+        score += v
+    return score
 
 
 if __name__ == '__main__':
@@ -102,5 +131,5 @@ if __name__ == '__main__':
         for file in files:
             file_path = os.path.join(root, file)
             print("File:", file_path)
-            quality = calculate_file_textual_quality(file_path)
+            quality = analyze_file(file_path)
             print("Model quality: ", quality)

@@ -1,3 +1,5 @@
+from dataclasses import asdict
+
 from flask import Flask, render_template, jsonify, request
 
 import main
@@ -14,7 +16,8 @@ def hello():
 
 @app.route("/api/history")
 def get_history():
-    results = storage.get_all_results()
+    db_results = storage.get_all_results()
+    results = [asdict(result) for result in db_results]
     return jsonify(results)
 
 
@@ -35,9 +38,7 @@ def upload_file():
 
     if file:
         print('Valid file submitted: ', filename)
-        labels = main.extract_activity_labels(file)
-        score = main.calculate_labels_quality(labels)
-        return jsonify({'filename': filename, 'labels': labels, 'score': score})
+        return jsonify(main.analyze_file(file))
 
 
 if __name__ == '__main__':
