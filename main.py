@@ -1,4 +1,5 @@
 import os
+import re
 
 from lxml import etree
 
@@ -12,13 +13,13 @@ import db_connector
 def extract_activity_labels(bpmn_file):
     try:
         tree = etree.parse(bpmn_file)
-        root = tree.getroot()
+        tree_root = tree.getroot()
 
         bpmn_namespace = {'bpmn': 'http://www.omg.org/spec/BPMN/20100524/MODEL'}
         activity_xpath = '//bpmn:task | //bpmn:userTask | //bpmn:serviceTask | //bpmn:subProcess'
-        activity_elements = root.xpath(activity_xpath, namespaces=bpmn_namespace)
+        activity_elements = tree_root.xpath(activity_xpath, namespaces=bpmn_namespace)
 
-        labels = [activity.get('name') for activity in activity_elements]
+        labels = [get_activity_label(activity) for activity in activity_elements]
 
         return labels
 
@@ -26,12 +27,15 @@ def extract_activity_labels(bpmn_file):
         print(f"Failed to parse BPMN file: {e}")
 
 
+def get_activity_label(activity):
+    return re.sub(r'[\n\r\t]', ' ', activity.get('name'))
+
+
 def calculate_labels_quality(labels):
     total_correspondence = 0
     score_by_label = []
 
     for label in labels:
-        label = label.replace("\n", " ")
         tokens = word_tokenize(label)
         correspondence = get_label_correspondence(tokens)
         score_by_label.append((label, correspondence))

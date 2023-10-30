@@ -24,15 +24,19 @@ def upload_file():
 
     file = request.files['fileInput']
 
-    if file.filename == '':
+    filename = file.filename
+
+    if filename == '':
         return jsonify({'error': 'No selected file in upload request'})
 
-    if not file.filename.endswith('.bpmn'):
+    if not filename.endswith('.bpmn'):
         return jsonify({'error': 'Invalid file extension in upload request'})
 
     if file:
-        print('file submitted: ', file.filename)
-        return 'file received: ' + file.filename
+        print('Valid file submitted: ', filename)
+        labels = main.extract_activity_labels(file)
+        score = main.calculate_labels_quality(labels)
+        return jsonify({'filename': filename, 'labels': labels, 'score': score})
 
 
 if __name__ == '__main__':
