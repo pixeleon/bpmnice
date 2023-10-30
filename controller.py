@@ -1,19 +1,20 @@
 from flask import Flask, render_template, jsonify, request
 
 import main
+import storage
 
 app = Flask(__name__)
 
 
 @app.route("/")
 def hello():
-    results = main.load_results()
+    results = storage.get_all_results()
     return render_template('home.html', results=results)
 
 
 @app.route("/api/history")
 def get_history():
-    results = main.load_results()
+    results = storage.get_all_results()
     return jsonify(results)
 
 
