@@ -36,31 +36,44 @@
               placeholder="File analysis results printed here" style="font-family: Consolas, serif">
     </textarea>
 
-    <script src="../static/script.js"></script>
-
     <h4 class="mt-4">Analysis history</h4>
-    <div>
-        {% for result in results %}
-        <div class="p-1 row">
-            <div class="col-9 d-flex align-items-center">
-                {{result['id']}}
-                {{result['score']}}
-                {{result['filename']}}
-                {{result['total_tasks']}}
-                {{result['invalid_tasks']}}
-            </div>
-            <div class="col-3">
-                <button type="button" class="btn btn-dark" style="float: right">Get file</button>
-            </div>
-        </div>
-        <div>
-        </div>
-        {% endfor %}
-    </div>
+
 </div>
-<hr>
+<div class="px-4">
+    <table class="table">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Filename</th>
+            <th>Score</th>
+            <th>Invalid</th>
+            <th>Total</th>
+            <th>Action</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for result in results %}
+        <tr>
+            <td>{{ result['id'] }}</td>
+            <td>{{ result['filename'] }}</td>
+            <td>{{ result['score'] }}</td>
+            <td>{{ result['invalid_tasks'] }}</td>
+            <td>{{ result['total_tasks'] }}</td>
+            <td>
+                <button type="button" class="btn btn-dark download-button" data-id="{{ result.id }}">Get file</button>
+            </td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<script src="../static/script.js"></script>
+
+</body>
+
 <footer>
+    <hr>
     <p class="text-center">Vadym Sheveliev 2023</p>
 </footer>
-</body>
 </html>

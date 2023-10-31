@@ -1,6 +1,8 @@
+import io
+
 from dataclasses import asdict
 
-from flask import Flask, render_template, jsonify, request
+from flask import Flask, render_template, jsonify, request, send_file
 
 import main
 import storage
@@ -39,6 +41,19 @@ def upload_file():
     if file:
         print('Valid file submitted: ', filename)
         return jsonify(main.analyze_file(file))
+
+
+@app.route('/download/<int:analysis_id>', methods=['GET'])
+def download_analysis_file(analysis_id):
+    file = storage.get_analysis_file(analysis_id)
+    if file:
+        return send_file(
+            io.BytesIO(file.data),
+            download_name=file.name,
+            as_attachment=True
+        )
+    else:
+        return jsonify({'error': 'Analysed file not found'})
 
 
 if __name__ == '__main__':

@@ -2,7 +2,7 @@ import os
 
 from dataclasses import dataclass
 
-from sqlalchemy import create_engine, Column, Integer, String, Float, LargeBinary
+from sqlalchemy import create_engine, Column, Integer, String, Float, LargeBinary, DateTime, desc, func
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, aliased
 
@@ -32,13 +32,14 @@ class AnalysisResult(Base):
     total_tasks: int = Column(Integer, nullable=False)
     invalid_tasks: int = Column(Integer, nullable=False)
     file_id: int = Column(Integer, nullable=False)
+    created_time = Column(DateTime, server_default=func.now())
 
 
 class AnalysedFile(Base):
     __tablename__ = FILES_TABLE_NAME
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String(255), nullable=False)
-    data = Column(LargeBinary)
+    data = Column(LargeBinary, nullable=False)
 
 
 Base.metadata.create_all(engine)
@@ -72,12 +73,20 @@ def get_all_results():
             AnalysisResult.score,
             file_alias.name.label("filename"),
         ).join(
-            file_alias,
-            AnalysisResult.file_id == file_alias.id
-        ).all()
+            file_alias, AnalysisResult.file_id == file_alias.id
+        ).order_by(desc(AnalysisResult.created_time)).limit(10).all()
 
         return results
     except Exception as e:
         print(f"Failed to retrieve analysis results from DB: {e}")
     finally:
         session.close()
+
+
+def get_analysis_file(analysis_id):
+    session = Session()
+    analysis_result = session.query(AnalysisResult).filter_by(id=analysis_id).first()
+    if analysis_result:
+        file = session.query(AnalysedFile).filter_by(id=analysis_result.file_id).first()
+        return file
+    session.close()
