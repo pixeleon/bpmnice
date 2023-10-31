@@ -50,3 +50,8 @@ document.addEventListener('DOMContentLoaded', function () {
     const form = document.getElementById('fileUploadForm');
     form.addEventListener('submit', submitForm);
 });
+
+document.getElementById('clearFileInput').addEventListener('click', function() {
+    document.getElementById('fileUploadForm').reset();
+});
+
