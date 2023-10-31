@@ -9,6 +9,8 @@ from nltk.corpus import wordnet
 
 import storage
 
+from model import AnalysisResultDto
+
 nltk.download('punkt')
 nltk.download('wordnet')
 
@@ -36,12 +38,12 @@ def get_activity_label(activity):
 
 
 def calculate_labels_score(labels):
-    score_by_label = {}
+    score_by_label = []
 
     for label in labels:
         tokens = word_tokenize(label)
         score = get_label_score(tokens)
-        score_by_label[label] = score
+        score_by_label.append((label, score))
 
     return score_by_label
 
@@ -95,31 +97,20 @@ def analyze_file(bpmn_file):
     total_score = get_total_labels_score(score_by_labels)
     invalid_tasks = get_invalid_labels_count(score_by_labels)
     average_score = total_score / total_tasks
+    filename = bpmn_file.filename
 
-    storage.save_result(bpmn_file.filename, average_score, total_tasks, invalid_tasks)
+    storage.save_result(filename, bpmn_file.read(), average_score, total_tasks, invalid_tasks)
 
-    return {
-        'filename:': bpmn_file.filename,
-        'score': average_score,
-        'totalTasks': total_tasks,
-        'invalidTasks': invalid_tasks,
-        'labels': labels
-    }
+    return AnalysisResultDto(filename=filename, score=average_score, labels=labels,
+                             total_tasks=total_tasks, invalid_tasks=invalid_tasks)
 
 
 def get_invalid_labels_count(score_by_labels):
-    invalid_labels = 0
-    for key, value in score_by_labels.items():
-        if value < 1:
-            invalid_labels += 1
-    return invalid_labels
+    return sum(1 for label, score in score_by_labels if score < 1)
 
 
 def get_total_labels_score(score_by_labels):
-    score = 0
-    for v in score_by_labels.values():
-        score += v
-    return score
+    return sum(score for label, score in score_by_labels)
 
 
 if __name__ == '__main__':

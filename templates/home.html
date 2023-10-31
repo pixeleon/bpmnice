@@ -35,15 +35,15 @@
     <div>
         {% for result in results %}
         <div class="p-1 row">
-            <div class="col-9">
+            <div class="col-9 d-flex align-items-center">
                 {{result['id']}}
                 {{result['score']}}
                 {{result['filename']}}
-                {{result['totalTasks']}}
-                {{result['invalidTasks']}}
+                {{result['total_tasks']}}
+                {{result['invalid_tasks']}}
             </div>
             <div class="col-3">
-                <button type="button" class="btn btn-dark" style="float: right">Get analyzed file</button>
+                <button type="button" class="btn btn-dark" style="float: right">Get file</button>
             </div>
         </div>
         <div>
