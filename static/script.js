@@ -2,11 +2,12 @@ const validFileExtensions = ['bpmn'];
 
 const resultsTextArea = document.getElementById('results');
 
+let gauge = null;
+
 function validateFile(fileName) {
     if (!fileName) {
         return "No file selected!";
     }
-
     const fileExtension = fileName.split('.').pop().toLowerCase();
     return validFileExtensions.includes(fileExtension) ? null : "Invalid file extension!";
 }
@@ -16,18 +17,30 @@ function setResultsText(color, text) {
     resultsTextArea.value = text;
 }
 
+function resetResults(invalidTasks, totalTasks) {
+    invalidTasks.textContent = '0';
+    totalTasks.textContent = '0'
+    if (gauge !== null) {
+        gauge.destroy();
+        gauge = null;
+    }
+}
+
 function submitForm(event) {
     event.preventDefault();
 
     const form = document.getElementById('fileUploadForm');
-    const textArea = document.getElementById('results');
     const fileInput = document.getElementById('fileInput');
+    const invalidTasks = document.getElementById('invalidTasks');
+    const totalTasks = document.getElementById('totalTasks');
+    const labelsTextarea = document.getElementById('labels');
 
     const fileName = fileInput.value;
 
     let validation = validateFile(fileName);
     if (validation != null) {
-        textArea.value = validation + " Please upload a valid .bpmn file";
+        labelsTextarea.value = validation + " Please upload a valid .bpmn file";
+        resetResults(invalidTasks, totalTasks);
         return;
     }
 
@@ -37,12 +50,32 @@ function submitForm(event) {
         method: 'POST',
         body: formData
     })
-        .then(response => response.text())
+        .then(response => response.json())
         .then(data => {
-            textArea.value = data;
+            console.log('data: ' + data)
+            invalidTasks.textContent = data.invalid_tasks;
+            totalTasks.textContent = data.total_tasks;
+            labelsTextarea.value = data.labels.join('\n');
+
+            let labelsText = '';
+
+            gauge = new JustGage({
+                id: 'scoreGauge',
+                value: data.score * 100,
+                min: 0,
+                max: 100,
+                label: 'Score',
+                width: 500,
+                height: 250,
+                gaugeWidthScale: 1.0,
+                relativeGaugeSize: true,
+                levelColors: ["#ff0000", "#f9c802", "#a9d70b"]
+            });
+
         })
         .catch(error => {
-            textArea.value = 'Error: ' + error;
+            labelsTextarea.value = 'Error: ' + error;
+            resetResults(invalidTasks, totalTasks)
         });
 }
 

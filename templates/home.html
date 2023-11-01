@@ -30,11 +30,25 @@
         </div>
     </form>
 
-
     <h4 class="mt-4">Analysis results</h4>
-    <textarea class="form-control" id="results" rows="5" readonly
-              placeholder="File analysis results printed here" style="font-family: Consolas, serif">
-    </textarea>
+    <div class="row">
+        <div class="col-6">
+            <h5>Total tasks: <span id="totalTasks">0</span></h5>
+        </div>
+        <div class="col-6">
+            <h5>Invalid tasks: <span id="invalidTasks">0</span></h5>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-6">
+            <textarea class="form-control" id="labels" rows="10" readonly
+                      style="font-family: Consolas, serif"></textarea>
+        </div>
+        <div class="col-6 d-flex align-items-center justify-content-center">
+            <div id="scoreGauge"></div>
+        </div>
+    </div>
+
 
     <h4 class="mt-4">Analysis history</h4>
 
@@ -68,6 +82,8 @@
     </table>
 </div>
 
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/raphael/2.1.4/raphael-min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/justgage/1.2.9/justgage.min.js"></script>
 <script src="../static/script.js"></script>
 
 </body>
