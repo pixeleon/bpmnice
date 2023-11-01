@@ -55,9 +55,15 @@ function submitForm(event) {
             console.log('data: ' + data)
             invalidTasks.textContent = data.invalid_tasks;
             totalTasks.textContent = data.total_tasks;
-            labelsTextarea.value = data.labels.join('\n');
 
             let labelsText = '';
+
+            data.labels_score.forEach(item => {
+                const style = item.score === 1 ? '(OK)' : '(NOT OK)';
+                labelsText += item.label + ' ' + style + '\n';
+            });
+
+            labelsTextarea.innerHTML = labelsText;
 
             gauge = new JustGage({
                 id: 'scoreGauge',

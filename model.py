@@ -1,4 +1,11 @@
 from dataclasses import dataclass
+from typing import List
+
+
+@dataclass
+class LabelScore:
+    label: str
+    score: int
 
 
 @dataclass
@@ -7,4 +14,4 @@ class AnalysisResultDto:
     score: float
     total_tasks: int
     invalid_tasks: int
-    labels: [str] = None
+    labels_score: List[LabelScore]

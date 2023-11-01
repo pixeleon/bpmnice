@@ -9,7 +9,7 @@ from nltk.corpus import wordnet
 
 import storage
 
-from model import AnalysisResultDto
+from model import AnalysisResultDto, LabelScore
 
 nltk.download('punkt')
 nltk.download('wordnet')
@@ -101,8 +101,10 @@ def analyze_file(bpmn_file):
 
     storage.save_result(filename, bpmn_file.read(), average_score, total_tasks, invalid_tasks)
 
-    return AnalysisResultDto(filename=filename, score=average_score, labels=labels,
-                             total_tasks=total_tasks, invalid_tasks=invalid_tasks)
+    labels_score = [LabelScore(label, score) for label, score in score_by_labels]
+
+    return AnalysisResultDto(filename=filename, total_tasks=total_tasks, invalid_tasks=invalid_tasks,
+                             score=average_score, labels_score=labels_score)
 
 
 def get_invalid_labels_count(score_by_labels):
