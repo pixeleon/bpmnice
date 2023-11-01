@@ -17,9 +17,10 @@ function setResultsText(color, text) {
     resultsTextArea.value = text;
 }
 
-function resetResults(invalidTasks, totalTasks) {
+function resetResults(invalidTasks, totalTasks, textarea) {
     invalidTasks.textContent = '0';
     totalTasks.textContent = '0'
+    textarea.value = ''
     if (gauge !== null) {
         gauge.destroy();
         gauge = null;
@@ -35,12 +36,13 @@ function submitForm(event) {
     const totalTasks = document.getElementById('totalTasks');
     const labelsTextarea = document.getElementById('labels');
 
+    resetResults(invalidTasks, totalTasks, labelsTextarea);
+
     const fileName = fileInput.value;
 
     let validation = validateFile(fileName);
     if (validation != null) {
         labelsTextarea.value = validation + " Please upload a valid .bpmn file";
-        resetResults(invalidTasks, totalTasks);
         return;
     }
 
@@ -59,11 +61,12 @@ function submitForm(event) {
             let labelsText = '';
 
             data.labels_score.forEach(item => {
-                const style = item.score === 1 ? '(OK)' : '(NOT OK)';
-                labelsText += item.label + ' ' + style + '\n';
+                const label = item.label.trim() === "" ? '<EMPTY>' : item.label
+                const conclusion = item.score === 1 ? '(OK)' : '(NOT OK)';
+                labelsText += label + ' ' + conclusion + '\n';
             });
 
-            labelsTextarea.innerHTML = labelsText;
+            labelsTextarea.value = labelsText;
 
             gauge = new JustGage({
                 id: 'scoreGauge',
@@ -71,8 +74,6 @@ function submitForm(event) {
                 min: 0,
                 max: 100,
                 label: 'Score',
-                width: 500,
-                height: 250,
                 gaugeWidthScale: 1.0,
                 relativeGaugeSize: true,
                 levelColors: ["#ff0000", "#f9c802", "#a9d70b"]
@@ -81,7 +82,6 @@ function submitForm(event) {
         })
         .catch(error => {
             labelsTextarea.value = 'Error: ' + error;
-            resetResults(invalidTasks, totalTasks)
         });
 }
 
