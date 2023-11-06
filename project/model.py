@@ -15,3 +15,8 @@ class AnalysisResultDto:
     total_tasks: int
     invalid_tasks: int
     labels_score: List[LabelScore]
+
+
+class AppUser:
+    email: str
+    password: str

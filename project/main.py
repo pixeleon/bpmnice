@@ -112,7 +112,7 @@ def get_total_labels_score(score_by_labels):
 if __name__ == '__main__':
     project_root = os.path.abspath(os.path.dirname(__file__))
 
-    for root, dirs, files in os.walk('set_4'):
+    for root, dirs, files in os.walk('../set_4'):
         for file in files:
             file_path = os.path.join(root, file)
             print("File:", file_path)
