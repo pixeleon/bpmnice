@@ -33,19 +33,21 @@
     <h4 class="mt-4">Analysis results</h4>
     <div class="row">
         <div class="col-6">
-            <h5>Total tasks: <span id="totalTasks">0</span></h5>
-        </div>
-        <div class="col-6">
-            <h5>Invalid tasks: <span id="invalidTasks">0</span></h5>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-6">
+            <div class="row">
+                <div class="col-6">
+                    <h5>Total tasks: <span id="totalTasks">0</span></h5>
+                </div>
+                <div class="col-6">
+                    <h5>Invalid: <span id="invalidTasks">0</span></h5>
+                </div>
+            </div>
             <textarea class="form-control" id="labels" rows="10" readonly
                       style="font-family: Consolas, serif"></textarea>
         </div>
-        <div class="col-6 d-flex align-items-center justify-content-center">
-            <div id="scoreGauge"></div>
+        <div class="col-6">
+            <div class="row h-100">
+                <div id="scoreGauge"></div>
+            </div>
         </div>
     </div>
 
@@ -69,7 +71,7 @@
         {% for result in results %}
         <tr>
             <td>{{ result['id'] }}</td>
-            <td style="max-width: 200px; overflow: hidden; text-overflow: ellipsis">{{result['filename'] }}</td>
+            <td style="max-width: 150px; overflow: hidden; text-overflow: ellipsis">{{result['filename'] }}</td>
             <td>{{ result['score'] }}</td>
             <td>{{ result['invalid_tasks'] }}</td>
             <td>{{ result['total_tasks'] }}</td>
