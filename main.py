@@ -1,9 +1,9 @@
 import os
 import re
 
-from lxml import etree
-
 import nltk
+
+from lxml import etree
 from nltk import word_tokenize
 from nltk.corpus import wordnet
 
@@ -31,6 +31,7 @@ def extract_activity_labels(bpmn_file):
 
     except etree.XMLSyntaxError as e:
         print(f"Failed to parse BPMN file: {e}")
+        return []
 
 
 def get_activity_label(activity):
@@ -46,12 +47,6 @@ def calculate_labels_score(labels):
         score_by_label.append((label, score))
 
     return score_by_label
-
-
-def print_invalid_labels(scores_by_label):
-    invalid_labels = [label for label, score in scores_by_label.items() if score < 0]
-    if len(invalid_labels) > 0:
-        print("Invalid labels: ", ", ".join(invalid_labels))
 
 
 def get_label_score(tokens):
@@ -91,20 +86,19 @@ def is_token_not_verb(token):
 
 def analyze_file(bpmn_file):
     labels = extract_activity_labels(bpmn_file)
-    print("Activity labels: ", labels)
     total_tasks = len(labels)
-    score_by_labels = calculate_labels_score(labels)
+    score_by_labels = calculate_labels_score(labels) if total_tasks > 0 else []
     total_score = get_total_labels_score(score_by_labels)
     invalid_tasks = get_invalid_labels_count(score_by_labels)
-    average_score = total_score / total_tasks
+    average_score = total_score / total_tasks if total_tasks > 0 else 0
+
     filename = bpmn_file.filename
 
     storage.save_result(filename, bpmn_file.read(), average_score, total_tasks, invalid_tasks)
 
     labels_score = [LabelScore(label, score) for label, score in score_by_labels]
 
-    return AnalysisResultDto(filename=filename, total_tasks=total_tasks, invalid_tasks=invalid_tasks,
-                             score=average_score, labels_score=labels_score)
+    return AnalysisResultDto(filename, average_score, total_tasks, invalid_tasks, labels_score)
 
 
 def get_invalid_labels_count(score_by_labels):
