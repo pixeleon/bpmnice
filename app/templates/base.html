@@ -10,7 +10,28 @@
 </head>
 <header>
     <h1 class="text-center mt-3">BPMNice&#128270;</h1>
-    <hr>
+    <hr class="opacity-50">
+    <div class="navbar navbar-expand px-1">
+        <div class="navbar-nav ms-auto h5 text-dark">
+            <a href="{{ url_for('hello') }}" class="nav-link">
+                Home
+            </a>
+            {% if not current_user.is_authenticated %}
+            <a href="{{ url_for('login') }}" class="nav-link">
+                Login
+            </a>
+            <a href="{{ url_for('signup') }}" class="nav-link">
+                Sign Up
+            </a>
+            {% endif %}
+            {% if current_user.is_authenticated %}
+            <a href="{{ url_for('logout') }}" class="nav-link">
+                Logout
+            </a>
+            {% endif %}
+        </div>
+    </div>
+    <hr class="opacity-50">
 </header>
 <body>
 {% block content %}{% endblock %}

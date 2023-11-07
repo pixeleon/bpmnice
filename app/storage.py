@@ -1,10 +1,11 @@
 import os
-
 from dataclasses import dataclass
 
+from flask_login import UserMixin
 from sqlalchemy import create_engine, Column, Integer, String, Float, LargeBinary, DateTime, desc, func
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, aliased
+from werkzeug.security import generate_password_hash, check_password_hash
 
 FILES_TABLE_NAME = 'analysed_file'
 RESULTS_TABLE_NAME = 'analysis_result'
@@ -42,7 +43,49 @@ class AnalysedFile(Base):
     data = Column(LargeBinary, nullable=False)
 
 
+class AppUser(Base, UserMixin):
+    __tablename__ = 'app_user'
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    name = Column(String(255), nullable=False)
+    email = Column(String(255), nullable=False, unique=True)
+    password = Column(String(255), nullable=False)
+
+
 Base.metadata.create_all(engine)
+
+
+def save_app_user(name, email, password):
+    session = Session()
+    try:
+        if session.query(AppUser).filter_by(email=email).first():
+            return False
+
+        user = AppUser(email=email, name=name, password=generate_password_hash(password, method='pbkdf2:sha256'))
+
+        session.add(user)
+        session.commit()
+        return True
+    except Exception as e:
+        print(f"Failed to save new user to DB: {e}")
+        session.rollback()
+    finally:
+        session.close()
+
+
+def get_app_user_by_credentials(email, password):
+    with Session() as session:
+        user = session.query(AppUser).filter_by(email=email).first()
+        if user and check_password_hash(user.password, password):
+            return user
+        else:
+            return None
+
+
+def get_app_user_by_id(id):
+    with Session() as session:
+        session = Session()
+        user = session.query(AppUser).get(id)
+        return user
 
 
 def save_result(file_name, file_data, score, total_tasks, invalid_tasks):
@@ -84,9 +127,10 @@ def get_all_results():
 
 
 def get_analysis_file(analysis_id):
-    session = Session()
-    analysis_result = session.query(AnalysisResult).filter_by(id=analysis_id).first()
-    if analysis_result:
-        file = session.query(AnalysedFile).filter_by(id=analysis_result.file_id).first()
-        return file
-    session.close()
+    with Session() as session:
+        session = Session()
+        analysis_result = session.query(AnalysisResult).filter_by(id=analysis_id).first()
+        if analysis_result:
+            file = session.query(AnalysedFile).filter_by(id=analysis_result.file_id).first()
+            return file
+        session.close()
