@@ -1,6 +1,5 @@
 from dataclasses import dataclass
 from typing import List
-from flask_login import UserMixin
 
 
 @dataclass

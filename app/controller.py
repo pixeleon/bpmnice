@@ -1,4 +1,6 @@
 import io
+import os
+
 from dataclasses import asdict
 
 from flask import Flask, render_template, jsonify, request, send_file, redirect, url_for, flash
@@ -9,7 +11,7 @@ import storage
 
 app = Flask(__name__)
 
-app.secret_key = 'super-secret-key'
+app.secret_key = os.getenv('FLASK_APP_SECRET_KEY')
 
 login_manager = LoginManager()
 login_manager.login_view = 'login'

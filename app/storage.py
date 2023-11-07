@@ -7,6 +7,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, aliased
 from werkzeug.security import generate_password_hash, check_password_hash
 
+USER_TABLE_NAME = 'app_user'
 FILES_TABLE_NAME = 'analysed_file'
 RESULTS_TABLE_NAME = 'analysis_result'
 
@@ -44,7 +45,7 @@ class AnalysedFile(Base):
 
 
 class AppUser(Base, UserMixin):
-    __tablename__ = 'app_user'
+    __tablename__ = USER_TABLE_NAME
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String(255), nullable=False)
     email = Column(String(255), nullable=False, unique=True)
