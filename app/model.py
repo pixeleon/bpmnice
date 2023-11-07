@@ -18,5 +18,6 @@ class AnalysisResultDto:
 
 
 class AppUser:
+    name: str
     email: str
     password: str

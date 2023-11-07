@@ -4,7 +4,7 @@ from dataclasses import asdict
 
 from flask import Flask, render_template, jsonify, request, send_file
 
-import main
+import analyzer
 import storage
 
 app = Flask(__name__)
@@ -40,7 +40,7 @@ def upload_file():
 
     if file:
         print('Valid file submitted: ', filename)
-        return jsonify(main.analyze_file(file))
+        return jsonify(analyzer.analyze_file(file))
 
 
 @app.route('/download/<int:analysis_id>', methods=['GET'])
@@ -54,6 +54,17 @@ def download_analysis_file(analysis_id):
         )
     else:
         return jsonify({'error': 'Analysed file not found'})
+
+
+
+@app.route('/login')
+def login():
+    return render_template('login.html')
+
+
+@app.route('/signup')
+def signup():
+    return render_template('signup.html')
 
 
 if __name__ == '__main__':
