@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from typing import List
+from flask_login import UserMixin
 
 
 @dataclass
@@ -15,9 +16,3 @@ class AnalysisResultDto:
     total_tasks: int
     invalid_tasks: int
     labels_score: List[LabelScore]
-
-
-class AppUser:
-    name: str
-    email: str
-    password: str
