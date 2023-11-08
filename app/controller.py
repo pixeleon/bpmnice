@@ -26,13 +26,13 @@ def load_user(user_id):
 @app.route("/")
 @login_required
 def hello():
-    results = storage.get_all_results()
+    results = storage.get_all_results(current_user.email)
     return render_template('home.html', results=results, user_name=current_user.name)
 
 
 @app.route("/api/history")
 def get_history():
-    db_results = storage.get_all_results()
+    db_results = storage.get_all_results(current_user.email)
     results = [asdict(result) for result in db_results]
     return jsonify(results)
 
@@ -53,8 +53,9 @@ def upload_file():
         return jsonify({'error': 'Invalid file extension in upload request'})
 
     if file:
+        email = current_user.email
         print('Valid file submitted: ', filename)
-        return jsonify(analyzer.analyze_file(file))
+        return jsonify(analyzer.analyze_file(file, email))
 
 
 @app.route('/download/<int:analysis_id>', methods=['GET'])

@@ -84,7 +84,7 @@ def is_token_not_verb(token):
     return any(synset.pos() != 'v' for synset in synsets)
 
 
-def analyze_file(bpmn_file):
+def analyze_file(bpmn_file, user_email):
     labels = extract_activity_labels(bpmn_file)
     total_tasks = len(labels)
     score_by_labels = calculate_labels_score(labels) if total_tasks > 0 else []
@@ -94,7 +94,7 @@ def analyze_file(bpmn_file):
 
     filename = bpmn_file.filename
 
-    storage.save_result(filename, bpmn_file.read(), average_score, total_tasks, invalid_tasks)
+    storage.save_result(filename, bpmn_file.read(), average_score, total_tasks, invalid_tasks, user_email)
 
     labels_score = [LabelScore(label, score) for label, score in score_by_labels]
 

@@ -34,6 +34,7 @@ class AnalysisResult(Base):
     total_tasks: int = Column(Integer, nullable=False)
     invalid_tasks: int = Column(Integer, nullable=False)
     file_id: int = Column(Integer, nullable=False)
+    user_email: str = Column(String(255))
     created_time = Column(DateTime, server_default=func.now())
 
 
@@ -84,19 +85,24 @@ def get_app_user_by_credentials(email, password):
 
 def get_app_user_by_id(id):
     with Session() as session:
-        session = Session()
         user = session.query(AppUser).get(id)
         return user
 
 
-def save_result(file_name, file_data, score, total_tasks, invalid_tasks):
+def save_result(file_name, file_data, score, total_tasks, invalid_tasks, user_email):
     session = Session()
     try:
         file = AnalysedFile(name=file_name, data=file_data)
         session.add(file)
         session.flush()
 
-        result = AnalysisResult(score=score, total_tasks=total_tasks, invalid_tasks=invalid_tasks, file_id=file.id)
+        result = AnalysisResult(
+            file_id=file.id,
+            score=score,
+            total_tasks=total_tasks,
+            invalid_tasks=invalid_tasks,
+            user_email=user_email
+        )
         session.add(result)
         session.commit()
     except Exception as e:
@@ -106,7 +112,7 @@ def save_result(file_name, file_data, score, total_tasks, invalid_tasks):
         session.close()
 
 
-def get_all_results():
+def get_all_results(user_email):
     session = Session()
     try:
         file_alias = aliased(AnalysedFile)
@@ -116,7 +122,7 @@ def get_all_results():
             AnalysisResult.invalid_tasks,
             AnalysisResult.score,
             file_alias.name.label("filename"),
-        ).join(
+        ).filter_by(user_email=user_email).join(
             file_alias, AnalysisResult.file_id == file_alias.id
         ).order_by(desc(AnalysisResult.created_time)).limit(10).all()
 
