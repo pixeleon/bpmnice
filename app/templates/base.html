@@ -10,12 +10,12 @@
 </head>
 <header>
     <h1 class="text-center mt-3">BPMNice&#128270;</h1>
-    <hr class="opacity-50">
-    <div class="navbar navbar-expand px-1">
+    <hr style="margin-bottom: 0.25rem">
+    <div class="navbar navbar-expand px-1 mt-1">
+        {% if current_user.is_authenticated %}
+        <span class="navbar-brand mb-0 h1">Hello, {{ current_user.name }}!</span>
+        {% endif %}
         <div class="navbar-nav ms-auto h5 text-dark">
-            <a href="{{ url_for('hello') }}" class="nav-link">
-                Home
-            </a>
             {% if not current_user.is_authenticated %}
             <a href="{{ url_for('login') }}" class="nav-link">
                 Login
@@ -31,7 +31,7 @@
             {% endif %}
         </div>
     </div>
-    <hr class="opacity-50">
+    <hr style="margin-top: 0.25rem">
 </header>
 <body>
 {% block content %}{% endblock %}

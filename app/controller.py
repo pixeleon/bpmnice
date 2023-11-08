@@ -85,12 +85,15 @@ def post_signup():
     name = request.form.get('username')
     email = request.form.get('email')
     password = request.form.get('password')
-    print('received signup request:', name, email, password)
+
     is_user_created = storage.save_app_user(name, email, password)
+
     if is_user_created:
-        return redirect(url_for('login'))
+        user = storage.get_app_user_by_credentials(email, password)
+        login_user(user, remember=False)
+        return redirect(url_for('hello'))
     else:
-        flash('Email address already exists!')
+        flash('This email address already used!')
         return redirect(url_for('signup'))
 
 
@@ -99,8 +102,6 @@ def post_login():
     email = request.form.get('email')
     password = request.form.get('password')
     remember = True if request.form.get('remember') else False
-
-    print('received login request:', email, password)
 
     user = storage.get_app_user_by_credentials(email, password)
     if not user:

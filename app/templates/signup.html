@@ -4,8 +4,8 @@
     <h2>Register new account</h2>
     {% with messages = get_flashed_messages() %}
     {% if messages %}
-    <div class="invalid-feedback">
-        {{ messages[0] }} Go to <a href="{{ url_for('login') }}">login page</a> instead
+    <div class="alert alert-danger" role="alert">
+        {{ messages[0] }} Go to <a href="{{ url_for('login') }}" class="alert-link">login page</a> instead
     </div>
     {% endif %}
     {% endwith %}
@@ -13,15 +13,17 @@
     <form class="mt-1" method="POST" action="/signup">
         <div class="form-group">
             <label class="h4" for="username">Name:</label>
-            <input type="text" class="form-control" id="username" name="username" placeholder="Your first name">
+            <input type="text" class="form-control" id="username" name="username" placeholder="Your first name"
+                   required>
         </div>
         <div class="form-group">
             <label class="h4" for="email">Email:</label>
-            <input type="email" class="form-control" id="email" name="email" placeholder="Your email address">
+            <input type="email" class="form-control" id="email" name="email" placeholder="Your email address" required>
         </div>
         <div class="form-group">
             <label class="h4" for="password">Password:</label>
-            <input type="password" class="form-control" id="password" name="password" placeholder="Trusty password">
+            <input type="password" class="form-control" id="password" name="password" placeholder="Good trusty password"
+                   required>
         </div>
         <button type="submit" class="btn btn-primary w-100 mt-2">Signup</button>
     </form>
