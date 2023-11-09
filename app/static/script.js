@@ -1,6 +1,6 @@
-const validFileExtensions = ['bpmn'];
-
-const resultsTextArea = document.getElementById('results');
+const VALID_FILE_EXTENSIONS = ['bpmn'];
+const BOOTSTRAP_INVALID_FEEDBACK_CLASS = 'is-invalid';
+const BOOTSTRAP_VALID_FEEDBACK_CLASS = 'is-valid';
 
 let gauge = null;
 
@@ -9,18 +9,13 @@ function validateFile(fileName) {
         return "No file selected!";
     }
     const fileExtension = fileName.split('.').pop().toLowerCase();
-    return validFileExtensions.includes(fileExtension) ? null : "Invalid file extension!";
-}
-
-function setResultsText(color, text) {
-    resultsTextArea.style.color = color;
-    resultsTextArea.value = text;
+    return VALID_FILE_EXTENSIONS.includes(fileExtension) ? null : "Invalid file extension!";
 }
 
 function resetResults(invalidTasks, totalTasks, textarea) {
     invalidTasks.textContent = '0';
-    totalTasks.textContent = '0'
-    textarea.value = ''
+    totalTasks.textContent = '0';
+    textarea.value = '';
     if (gauge !== null) {
         gauge.destroy();
         gauge = null;
@@ -32,20 +27,22 @@ function submitForm(event) {
 
     const form = document.getElementById('fileUploadForm');
     const fileInput = document.getElementById('fileInput');
+    const invalidFeedback = document.getElementById('fileInputFeedback');
     const invalidTasks = document.getElementById('invalidTasks');
     const totalTasks = document.getElementById('totalTasks');
     const labelsTextarea = document.getElementById('labels');
 
     resetResults(invalidTasks, totalTasks, labelsTextarea);
 
-    const fileName = fileInput.value;
-
-    let validation = validateFile(fileName);
+    let validation = validateFile(fileInput.value);
     if (validation != null) {
-        labelsTextarea.value = validation + " Please upload a valid .bpmn file";
+        fileInput.classList.add(BOOTSTRAP_INVALID_FEEDBACK_CLASS);
+        invalidFeedback.style.display = 'block';
+        invalidFeedback.textContent = validation + ' Please upload a valid *.bpmn file';
         return;
+    } else {
+        fileInput.classList.add(BOOTSTRAP_VALID_FEEDBACK_CLASS);
     }
-
     const formData = new FormData(form);
 
     fetch('/upload', {
@@ -54,7 +51,6 @@ function submitForm(event) {
     })
         .then(response => response.json())
         .then(data => {
-            console.log('data: ' + data)
             invalidTasks.textContent = data.invalid_tasks;
             totalTasks.textContent = data.total_tasks;
 
@@ -85,13 +81,27 @@ function submitForm(event) {
         });
 }
 
+function resetFeedback(input, feedback) {
+    return function () {
+        input.classList.remove(BOOTSTRAP_INVALID_FEEDBACK_CLASS);
+        feedback.style.display = 'none';
+    };
+}
+
 document.addEventListener('DOMContentLoaded', function () {
     const form = document.getElementById('fileUploadForm');
     form.addEventListener('submit', submitForm);
+    const input = document.getElementById('fileInput');
+    const feedback = document.getElementById('fileInputFeedback');
+    input.addEventListener('change', resetFeedback(input, feedback))
 });
 
 document.getElementById('clearFileInput').addEventListener('click', function () {
     document.getElementById('fileUploadForm').reset();
+    const fileInput = document.getElementById('fileInput');
+    const invalidFeedback = document.getElementById('fileInputFeedback');
+    fileInput.classList.remove(BOOTSTRAP_INVALID_FEEDBACK_CLASS);
+    invalidFeedback.style.display = 'none';
 });
 
 document.addEventListener('DOMContentLoaded', function () {
