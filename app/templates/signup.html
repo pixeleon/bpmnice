@@ -2,26 +2,36 @@
 {% block content %}
 <div class="container">
     <h2>Sign up with new account</h2>
-    <form class="mt-1" method="POST" action="/signup">
+    <form class="mt-1 needs-validation" method="POST" action="/signup" novalidate
+          onsubmit="return validateSignupForm();">
         <div class="row mb-3">
-            <label class="col-sm-2 col-form-label col-form-label-lg" for="username">Name:</label>
+            <label class="col-sm-2 col-form-label col-form-label-lg" for="signupNameInput">Name:</label>
             <div class="col-sm-10">
-                <input type="text" class="form-control form-control-lg" id="username" name="username"
+                <input type="text" class="form-control form-control-lg" id="signupNameInput" name="username"
                        placeholder="Your first name" required>
+                <div class="invalid-feedback" style="font-size: medium" id="signupNameInputFeedback">
+                    Please enter a valid name
+                </div>
             </div>
         </div>
         <div class="row mb-3">
-            <label class="col-sm-2 col-form-label col-form-label-lg" for="email">Email:</label>
+            <label class="col-sm-2 col-form-label col-form-label-lg" for="signupEmailInput">Email:</label>
             <div class="col-sm-10">
-                <input type="email" class="form-control form-control-lg" id="email" name="email"
+                <input type="email" class="form-control form-control-lg" id="signupEmailInput" name="email"
                        placeholder="Your email address" required>
+                <div class="invalid-feedback" style="font-size: medium" id="signupEmailInputFeedback">
+                    Please enter a valid email
+                </div>
             </div>
         </div>
         <div class="row mb-3">
-            <label class="col-sm-2 col-form-label col-form-label-lg" for="password">Password:</label>
+            <label class="col-sm-2 col-form-label col-form-label-lg" for="signupPasswordInput">Password:</label>
             <div class="col-sm-10">
-                <input type="password" class="form-control form-control-lg" id="password" name="password"
+                <input type="password" class="form-control form-control-lg" id="signupPasswordInput" name="password"
                        placeholder="Good trusty password" required>
+                <div class="invalid-feedback" style="font-size: medium" id="signupPasswordInputFeedback">
+                    Please enter a valid password
+                </div>
             </div>
         </div>
         {% with messages = get_flashed_messages() %}
@@ -34,4 +44,5 @@
         <button type="submit" class="btn btn-primary w-100 mt-1">Signup</button>
     </form>
 </div>
+<script src="../static/validation.js"></script>
 {% endblock %}
