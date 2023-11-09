@@ -94,7 +94,7 @@ def post_signup():
         login_user(user, remember=False)
         return redirect(url_for('hello'))
     else:
-        flash('This email address already used!')
+        flash('This email address already in use!')
         return redirect(url_for('signup'))
 
 
