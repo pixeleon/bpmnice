@@ -1,4 +1,4 @@
-const NAME_REGEX = /^[a-zA-Z\s\-']+$/;
+const INVALID_NAME_CHARACTERS_REGEX = /[!@#$%^&*()_+={}[\]:;<>,.?/~\\]/;
 const EMAIL_REGEX = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
 function validateSignupForm() {
@@ -18,31 +18,33 @@ function validateSignupForm() {
     emailInput.classList.remove('is-invalid');
     passwordInput.classList.remove('is-invalid');
 
-    // Validate not empty
     if (nameValue === '') {
         nameInput.classList.add('is-invalid');
         nameInputFeedback.textContent = 'Must not be empty';
         return false;
     }
 
-    // Validate length (2 to 20 characters)
-    if (nameValue.length < 2 || nameValue.length > 20) {
+    if (nameValue.length < 2) {
         nameInput.classList.add('is-invalid');
-        nameInputFeedback.textContent = 'Must be between 2 and 20 characters';
+        nameInputFeedback.textContent = 'Must be at least 2 characters';
         return false;
     }
 
-    // Validate doesn't contain any numerals
+    if (nameValue.length > 50) {
+        nameInput.classList.add('is-invalid');
+        nameInputFeedback.textContent = 'Must be at most 50 characters';
+        return false;
+    }
+
     if (/\d/.test(nameValue)) {
         nameInput.classList.add('is-invalid');
         nameInputFeedback.textContent = 'Cannot contain any numerals';
         return false;
     }
 
-    // Validate contains only allowed characters (letters, spaces, hyphens, and apostrophes)
-    if (!NAME_REGEX.test(nameValue)) {
+    if (INVALID_NAME_CHARACTERS_REGEX.test(nameValue)) {
         nameInput.classList.add('is-invalid');
-        nameInputFeedback.textContent = 'Must conatin only letters, spaces, hyphens, and apostrophes';
+        nameInputFeedback.textContent = 'Cannot contain special characters other than space, hyphen, and apostrophe';
         return false;
     }
 
@@ -54,9 +56,15 @@ function validateSignupForm() {
         return false;
     }
 
-    if (emailValue.length < 8 || emailValue.length > 250) {
+    if (emailValue.length < 8) {
         emailInput.classList.add('is-invalid');
         emailInputFeedback.textContent = 'Must be at least 8 characters';
+        return false;
+    }
+
+    if (emailValue.length > 100) {
+        emailInput.classList.add('is-invalid');
+        emailInputFeedback.textContent = 'Must be at most 100 characters';
         return false;
     }
 
@@ -74,9 +82,15 @@ function validateSignupForm() {
         return false;
     }
 
-    if (passwordValue.length < 8 || passwordValue.length > 250) {
+    if (passwordValue.length < 8) {
         passwordInput.classList.add('is-invalid');
         passwordInputFeedback.textContent = 'Must be at least 8 characters';
+        return false;
+    }
+
+    if (passwordValue.length > 100) {
+        passwordInput.classList.add('is-invalid');
+        passwordInputFeedback.textContent = 'Must be at most 100 characters';
         return false;
     }
 
