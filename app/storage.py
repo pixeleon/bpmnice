@@ -51,6 +51,7 @@ class AppUser(Base, UserMixin):
     name = Column(String(255), nullable=False)
     email = Column(String(255), nullable=False, unique=True)
     password = Column(String(255), nullable=False)
+    created_time = Column(DateTime, server_default=func.now())
 
 
 Base.metadata.create_all(engine)
