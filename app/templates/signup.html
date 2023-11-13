@@ -34,6 +34,9 @@
                 </div>
             </div>
         </div>
+        <div class="alert alert-secondary" role="alert" style="margin-top: 1rem">
+            Already have an account? You can <a href="{{ url_for('login') }}" class="alert-link">login here</a>!
+        </div>
         {% with messages = get_flashed_messages() %}
         {% if messages %}
         <div class="alert alert-danger" role="alert" style="margin-top: 1rem">
