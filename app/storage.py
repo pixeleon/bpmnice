@@ -34,7 +34,7 @@ class AnalysisResult(Base):
     total_tasks: int = Column(Integer, nullable=False)
     invalid_tasks: int = Column(Integer, nullable=False)
     file_id: int = Column(Integer, nullable=False)
-    user_email: str = Column(String(255))
+    user_id: int = Column(Integer, nullable=False)
     created_time = Column(DateTime, server_default=func.now())
 
 
@@ -89,9 +89,10 @@ def get_app_user_by_id(id):
         return user
 
 
-def save_result(file_name, file_data, score, total_tasks, invalid_tasks, user_email):
+def save_result(file_name, file_data, score, total_tasks, invalid_tasks, user_id):
     session = Session()
     try:
+
         file = AnalysedFile(name=file_name, data=file_data)
         session.add(file)
         session.flush()
@@ -101,7 +102,7 @@ def save_result(file_name, file_data, score, total_tasks, invalid_tasks, user_em
             score=score,
             total_tasks=total_tasks,
             invalid_tasks=invalid_tasks,
-            user_email=user_email
+            user_id=user_id
         )
         session.add(result)
         session.commit()
@@ -112,7 +113,7 @@ def save_result(file_name, file_data, score, total_tasks, invalid_tasks, user_em
         session.close()
 
 
-def get_all_results(user_email):
+def get_all_results(user_id):
     session = Session()
     try:
         file_alias = aliased(AnalysedFile)
@@ -122,7 +123,7 @@ def get_all_results(user_email):
             AnalysisResult.invalid_tasks,
             AnalysisResult.score,
             file_alias.name.label("filename"),
-        ).filter_by(user_email=user_email).join(
+        ).filter_by(user_id=user_id).join(
             file_alias, AnalysisResult.file_id == file_alias.id
         ).order_by(desc(AnalysisResult.created_time)).limit(10).all()
 
@@ -135,9 +136,7 @@ def get_all_results(user_email):
 
 def get_analysis_file(analysis_id):
     with Session() as session:
-        session = Session()
         analysis_result = session.query(AnalysisResult).filter_by(id=analysis_id).first()
         if analysis_result:
             file = session.query(AnalysedFile).filter_by(id=analysis_result.file_id).first()
             return file
-        session.close()
