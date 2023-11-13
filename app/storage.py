@@ -123,6 +123,7 @@ def get_all_results(user_id):
             AnalysisResult.total_tasks,
             AnalysisResult.invalid_tasks,
             AnalysisResult.score,
+            AnalysisResult.created_time,
             file_alias.name.label("filename"),
         ).filter_by(user_id=user_id).join(
             file_alias, AnalysisResult.file_id == file_alias.id

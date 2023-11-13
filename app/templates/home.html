@@ -52,6 +52,7 @@
             <th>Score</th>
             <th>Invalid</th>
             <th>Total</th>
+            <th class="d-none d-lg-table-cell">Date & Time</th>
             <th style="text-align: right; padding-right: 25px">Action</th>
         </tr>
         </thead>
@@ -63,6 +64,7 @@
             <td>{{ result['score'] }}</td>
             <td>{{ result['invalid_tasks'] }}</td>
             <td>{{ result['total_tasks'] }}</td>
+            <td class="d-none d-lg-table-cell">{{ result['created_time'].strftime('%d.%m.%Y %H:%M:%S')}}</td>
             <td style="text-align: right">
                 <button type="button" class="btn btn-dark download-button" data-id="{{ result.id }}">Get file</button>
             </td>
