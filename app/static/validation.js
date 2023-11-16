@@ -16,9 +16,14 @@ function validateSignupForm() {
     const passwordValue = passwordInput.value.trim();
     const passwordInputFeedback = document.getElementById('signupPasswordInputFeedback');
 
+    const passwordConfirmationInput = document.getElementById('signupPasswordConfirmationInput');
+    const passwordConfirmationValue = passwordConfirmationInput.value.trim();
+    const passwordConfirmationFeedback = document.getElementById('signupPasswordConfirmationInputFeedback');
+
     nameInput.classList.remove(BOOTSTRAP_INVALID_CLASS_NAME);
     emailInput.classList.remove(BOOTSTRAP_INVALID_CLASS_NAME);
     passwordInput.classList.remove(BOOTSTRAP_INVALID_CLASS_NAME);
+    passwordConfirmationInput.classList.remove(BOOTSTRAP_INVALID_CLASS_NAME);
 
     if (nameValue === '') {
         nameInput.classList.add(BOOTSTRAP_INVALID_CLASS_NAME);
@@ -96,6 +101,12 @@ function validateSignupForm() {
         return false;
     }
 
+    if (!/[a-zA-Z]/.test(passwordValue)) {
+        passwordInput.classList.add(BOOTSTRAP_INVALID_CLASS_NAME);
+        passwordInputFeedback.textContent = 'Must contain at least one Latin character';
+        return false;
+    }
+
     if (!/\d/.test(passwordValue)) {
         passwordInput.classList.add(BOOTSTRAP_INVALID_CLASS_NAME);
         passwordInputFeedback.textContent = 'Must contain at least one digit';
@@ -105,6 +116,14 @@ function validateSignupForm() {
     if (!/[\W_]/.test(passwordValue)) {
         passwordInput.classList.add(BOOTSTRAP_INVALID_CLASS_NAME);
         passwordInputFeedback.textContent = 'Must contain at least one special character';
+        return false;
+    }
+
+    passwordInput.classList.remove(BOOTSTRAP_INVALID_CLASS_NAME);
+
+    if (passwordValue !== passwordConfirmationValue) {
+        passwordConfirmationInput.classList.add(BOOTSTRAP_INVALID_CLASS_NAME);
+        passwordConfirmationFeedback.textContent = 'Passwords do not match';
         return false;
     }
 

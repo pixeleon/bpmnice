@@ -60,7 +60,7 @@
         {% for result in results %}
         <tr>
             <td>{{ result['id'] }}</td>
-            <td style="max-width: 250px; overflow: hidden; text-overflow: ellipsis">{{result['filename']}}</td>
+            <td class="text-truncate" style="max-width: 250px">{{result['filename']}}</td>
             <td>{{ result['score'] }}</td>
             <td>{{ result['invalid_tasks'] }}</td>
             <td>{{ result['total_tasks'] }}</td>

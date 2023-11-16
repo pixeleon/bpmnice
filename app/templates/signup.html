@@ -34,6 +34,18 @@
                 </div>
             </div>
         </div>
+        <div class="row mb-3">
+            <label class="col-sm-2 col-form-label col-form-label-lg text-truncate" for="signupPasswordConfirmationInput">
+                Confirm password:
+            </label>
+            <div class="col-sm-10">
+                <input type="password" class="form-control form-control-lg" id="signupPasswordConfirmationInput"
+                       placeholder="Copy of good trusty password" required>
+                <div class="invalid-feedback" style="font-size: medium" id="signupPasswordConfirmationInputFeedback">
+                    Please ensure your passwords are equal
+                </div>
+            </div>
+        </div>
         <div class="alert alert-secondary" role="alert" style="margin-top: 1rem">
             Already have an account? You can <a href="{{ url_for('login') }}" class="alert-link">login here</a>!
         </div>
