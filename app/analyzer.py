@@ -54,16 +54,12 @@ def get_label_score(tokens):
         return 0
 
     first_token = tokens[0]
-    first_words_pos = []
-
     is_first_token_verb = is_token_verb(first_token)
-    first_words_pos.append((first_token, is_first_token_verb))
 
     if not is_first_token_verb:
         return 0
 
     object_tokens = tokens[1:]
-
     are_object_tokens_nouns = any(is_token_noun(token) for token in object_tokens)
 
     return 1 if are_object_tokens_nouns else 0

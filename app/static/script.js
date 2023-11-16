@@ -58,8 +58,8 @@ function submitForm(event) {
 
             data.labels_score.forEach(item => {
                 const label = item.label.trim() === "" ? '<EMPTY>' : item.label
-                const conclusion = item.score === 1 ? '(OK)' : '(NOT OK)';
-                labelsText += label + ' ' + conclusion + '\n';
+                const conclusion = item.score === 1 ? '+' : '-';
+                labelsText += conclusion + ' ' + label + '\n';
             });
 
             labelsTextarea.value = labelsText;
