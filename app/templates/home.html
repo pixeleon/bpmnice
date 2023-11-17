@@ -49,6 +49,9 @@
     </div>
 </div>
 <div class="px-4">
+    {% if results is none or results|length == 0 %}
+    <p class="text-center fs-4">No files have been analyzed yet</p>
+    {% else %}
     <table class="table">
         <thead>
         <tr>
@@ -77,6 +80,7 @@
         {% endfor %}
         </tbody>
     </table>
+    {% endif %}
 </div>
 
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/raphael/2.1.4/raphael-min.js"></script>
