@@ -1,15 +1,10 @@
 import os
-from dataclasses import dataclass
 
-from flask_login import UserMixin
-from sqlalchemy import create_engine, Column, Integer, String, Float, LargeBinary, DateTime, desc, func
-from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy import create_engine, desc
 from sqlalchemy.orm import sessionmaker, aliased
 from werkzeug.security import generate_password_hash, check_password_hash
 
-USER_TABLE_NAME = 'app_user'
-FILES_TABLE_NAME = 'analysed_file'
-RESULTS_TABLE_NAME = 'analysis_result'
+from app.model import AppUser, AnalysedFile, AnalysisResult, Base
 
 username = os.getenv("DATABASE_USERNAME")
 password = os.getenv("DATABASE_PASSWORD")
@@ -23,37 +18,6 @@ ssl_config = {"ssl": {"ssl_ca": ssl_ca}}
 engine = create_engine(db_url, connect_args=ssl_config)
 
 Session = sessionmaker(bind=engine)
-Base = declarative_base()
-
-
-@dataclass
-class AnalysisResult(Base):
-    __tablename__ = RESULTS_TABLE_NAME
-    id: int = Column(Integer, primary_key=True, autoincrement=True)
-    score: float = Column(Float, nullable=False)
-    total_tasks: int = Column(Integer, nullable=False)
-    invalid_tasks: int = Column(Integer, nullable=False)
-    file_id: int = Column(Integer, nullable=False)
-    user_id: int = Column(Integer, nullable=False)
-    created_time = Column(DateTime, server_default=func.now())
-
-
-class AnalysedFile(Base):
-    __tablename__ = FILES_TABLE_NAME
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    name = Column(String(255), nullable=False)
-    data = Column(LargeBinary, nullable=False)
-
-
-class AppUser(Base, UserMixin):
-    __tablename__ = USER_TABLE_NAME
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    name = Column(String(255), nullable=False)
-    email = Column(String(255), nullable=False, unique=True)
-    password = Column(String(255), nullable=False)
-    created_time = Column(DateTime, server_default=func.now())
-
-
 Base.metadata.create_all(engine)
 
 
@@ -93,18 +57,18 @@ def get_app_user_by_id(id):
 def save_result(file_name, file_data, score, total_tasks, invalid_tasks, user_id):
     session = Session()
     try:
-
         file = AnalysedFile(name=file_name, data=file_data)
         session.add(file)
         session.flush()
 
         result = AnalysisResult(
-            file_id=file.id,
             score=score,
             total_tasks=total_tasks,
             invalid_tasks=invalid_tasks,
-            user_id=user_id
+            user_id=user_id,
+            file_id=file.id
         )
+
         session.add(result)
         session.commit()
     except Exception as e:
@@ -128,7 +92,6 @@ def get_all_results(user_id):
         ).filter_by(user_id=user_id).join(
             file_alias, AnalysisResult.file_id == file_alias.id
         ).order_by(desc(AnalysisResult.created_time)).limit(10).all()
-
         return results
     except Exception as e:
         print(f"Failed to retrieve analysis results from DB: {e}")
