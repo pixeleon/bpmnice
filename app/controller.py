@@ -7,7 +7,7 @@ from flask import Flask, render_template, jsonify, request, send_file, redirect,
 from flask_login import LoginManager, login_user, current_user, login_required, logout_user
 
 import analyzer
-import storage
+import repository
 
 DATA_EXPORT_FILENAME = 'analysis_results'
 CSV_FILE_EXTENSION = '.csv'
@@ -33,19 +33,19 @@ def create_results_data_frame(results):
 
 @login_manager.user_loader
 def load_user(user_id):
-    return storage.get_app_user_by_id(int(user_id))
+    return repository.get_app_user_by_id(int(user_id))
 
 
 @app.route("/")
 @login_required
 def hello():
-    results = storage.get_all_results(current_user.id)
+    results = repository.get_all_results(current_user.id)
     return render_template('home.html', results=results, user_name=current_user.name)
 
 
 @app.route("/api/history")
 def get_history():
-    db_results = storage.get_all_results(current_user.id)
+    db_results = repository.get_all_results(current_user.id)
     results = [asdict(result) for result in db_results]
     return jsonify(results)
 
@@ -73,7 +73,7 @@ def upload_file():
 
 @app.route('/download/<int:analysis_id>', methods=['GET'])
 def download_analysis_file(analysis_id):
-    file = storage.get_analysis_file(analysis_id)
+    file = repository.get_analysis_file(analysis_id)
     if file:
         return send_file(
             io.BytesIO(file.data),
@@ -86,7 +86,7 @@ def download_analysis_file(analysis_id):
 
 @app.route('/export_csv', methods=['GET'])
 def export_csv():
-    data = storage.get_all_results(current_user.id)
+    data = repository.get_all_results(current_user.id)
     data_frame = create_results_data_frame(data)
     export_file = io.BytesIO()
     data_frame.to_csv(export_file, index=False, encoding='utf-8')
@@ -101,7 +101,7 @@ def export_csv():
 
 @app.route('/export_xls', methods=['GET'])
 def export_data():
-    data = storage.get_all_results(current_user.id)
+    data = repository.get_all_results(current_user.id)
     data_frame = create_results_data_frame(data)
     export_file = io.BytesIO()
     with pandas.ExcelWriter(export_file, engine='openpyxl') as writer:
@@ -135,10 +135,10 @@ def post_signup():
     email = request.form.get('email')
     password = request.form.get('password')
 
-    is_user_created = storage.save_app_user(name, email, password)
+    is_user_created = repository.save_app_user(name, email, password)
 
     if is_user_created:
-        user = storage.get_app_user_by_credentials(email, password)
+        user = repository.get_app_user_by_credentials(email, password)
         login_user(user, remember=False)
         return redirect(url_for('hello'))
     else:
@@ -152,7 +152,7 @@ def post_login():
     password = request.form.get('password')
     remember = True if request.form.get('remember') else False
 
-    user = storage.get_app_user_by_credentials(email, password)
+    user = repository.get_app_user_by_credentials(email, password)
     if not user:
         flash('Please check your login details and try again!')
         return redirect(url_for('login'))

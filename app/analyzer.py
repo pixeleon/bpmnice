@@ -7,7 +7,7 @@ from lxml import etree
 from nltk import word_tokenize
 from nltk.corpus import wordnet
 
-import storage
+import repository
 
 from model import AnalysisResultDto, LabelScore
 
@@ -90,7 +90,7 @@ def analyze_file(bpmn_file, user_id):
 
     filename = bpmn_file.filename
 
-    storage.save_result(filename, bpmn_file.read(), average_score, total_tasks, invalid_tasks, user_id)
+    repository.save_result(filename, bpmn_file.read(), average_score, total_tasks, invalid_tasks, user_id)
 
     labels_score = [LabelScore(label, score) for label, score in score_by_labels]
 
