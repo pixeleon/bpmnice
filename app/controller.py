@@ -1,6 +1,6 @@
 import io
 import os
-
+import pandas
 from dataclasses import asdict
 
 from flask import Flask, render_template, jsonify, request, send_file, redirect, url_for, flash
@@ -9,6 +9,12 @@ from flask_login import LoginManager, login_user, current_user, login_required, 
 import analyzer
 import storage
 
+DATA_EXPORT_FILENAME = 'analysis_results'
+CSV_FILE_EXTENSION = '.csv'
+XLSX_FILE_EXTENSION = '.xlsx'
+CSV_MIMETYPE = 'text/csv'
+XLS_MIMETYPE = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+
 app = Flask(__name__)
 
 app.secret_key = os.getenv('FLASK_APP_SECRET_KEY')
@@ -16,6 +22,13 @@ app.secret_key = os.getenv('FLASK_APP_SECRET_KEY')
 login_manager = LoginManager()
 login_manager.login_view = 'login'
 login_manager.init_app(app)
+
+
+def create_results_data_frame(results):
+    return pandas.DataFrame(
+        [(x.id, x.filename, x.total_tasks, x.invalid_tasks, x.score, x.created_time) for x in results],
+        columns=['ID', 'Filename', 'Total tasks', 'Invalid tasks', 'Model score', 'Created at']
+    )
 
 
 @login_manager.user_loader
@@ -69,6 +82,41 @@ def download_analysis_file(analysis_id):
         )
     else:
         return jsonify({'error': 'Analysed file not found'})
+
+
+@app.route('/export_csv', methods=['GET'])
+def export_csv():
+    data = storage.get_all_results(current_user.id)
+    data_frame = create_results_data_frame(data)
+    export_file = io.BytesIO()
+    data_frame.to_csv(export_file, index=False, encoding='utf-8')
+    export_file.seek(0)
+    return send_file(
+        export_file,
+        as_attachment=True,
+        mimetype=CSV_MIMETYPE,
+        download_name=DATA_EXPORT_FILENAME + CSV_FILE_EXTENSION
+    )
+
+
+@app.route('/export_xls', methods=['GET'])
+def export_data():
+    data = storage.get_all_results(current_user.id)
+    data_frame = create_results_data_frame(data)
+    export_file = io.BytesIO()
+    with pandas.ExcelWriter(export_file, engine='openpyxl') as writer:
+        column_widths = {'A': 4, 'B': 40, 'C': 15, 'D': 15, 'E': 15, 'F': 16}
+        data_frame.to_excel(writer, index=False, sheet_name='History')
+        worksheet = writer.sheets['History']
+        for column, width in column_widths.items():
+            worksheet.column_dimensions[column].width = width
+    export_file.seek(0)
+    return send_file(
+        export_file,
+        as_attachment=True,
+        mimetype=XLS_MIMETYPE,
+        download_name=DATA_EXPORT_FILENAME + XLSX_FILE_EXTENSION
+    )
 
 
 @app.route('/login')
