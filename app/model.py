@@ -12,7 +12,7 @@ RESULTS_TABLE_NAME = 'analysis_result'
 Base = declarative_base()
 
 
-class AppUser(Base, UserMixin):
+class AppUser(UserMixin, Base):
     __tablename__ = USER_TABLE_NAME
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String(255), nullable=False)

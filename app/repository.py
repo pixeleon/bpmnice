@@ -24,14 +24,13 @@ Base.metadata.create_all(engine)
 def save_app_user(name, email, password):
     session = Session()
     try:
-        if session.query(AppUser).filter_by(email=email).first():
+        if not session.query(AppUser).filter_by(email=email).first():
+            user = AppUser(email=email, name=name, password=generate_password_hash(password, method='pbkdf2:sha256'))
+            session.add(user)
+            session.commit()
+            return True
+        else:
             return False
-
-        user = AppUser(email=email, name=name, password=generate_password_hash(password, method='pbkdf2:sha256'))
-
-        session.add(user)
-        session.commit()
-        return True
     except Exception as e:
         print(f"Failed to save new user to DB: {e}")
         session.rollback()
@@ -42,10 +41,7 @@ def save_app_user(name, email, password):
 def get_app_user_by_credentials(email, password):
     with Session() as session:
         user = session.query(AppUser).filter_by(email=email).first()
-        if user and check_password_hash(user.password, password):
-            return user
-        else:
-            return None
+        return user if (user and check_password_hash(user.password, password)) else None
 
 
 def get_app_user_by_id(id):
