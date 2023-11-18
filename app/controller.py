@@ -1,6 +1,7 @@
 import io
 import os
 from dataclasses import asdict
+from datetime import timedelta
 
 from flask import Flask, render_template, jsonify, request, send_file, redirect, url_for, flash
 from flask_login import LoginManager, login_user, current_user, login_required, logout_user
@@ -17,6 +18,7 @@ XLS_MIMETYPE = 'application/vnd.openxmlformats-officedocument.spreadsheetml.shee
 
 app = Flask(__name__)
 
+app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(hours=24)
 app.secret_key = os.getenv('FLASK_APP_SECRET_KEY')
 
 login_manager = LoginManager()
