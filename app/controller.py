@@ -1,6 +1,5 @@
 import io
 import os
-from dataclasses import asdict
 from datetime import timedelta
 
 from flask import Flask, render_template, jsonify, request, send_file, redirect, url_for, flash
@@ -34,15 +33,17 @@ def load_user(user_id):
 @app.route("/")
 @login_required
 def hello():
-    results = repository.get_all_results(current_user.id)
-    return render_template('home.html', results=results, user_name=current_user.name)
-
-
-@app.route("/api/history")
-def get_history():
-    db_results = repository.get_all_results(current_user.id)
-    results = [asdict(result) for result in db_results]
-    return jsonify(results)
+    user_id = current_user.id
+    page = request.args.get('page', default=1, type=int)
+    page_size = request.args.get('page_size', default=10, type=int)
+    results = repository.get_results_page(user_id, page, page_size)
+    results_count = repository.get_results_count(user_id)
+    return render_template('home.html',
+                           results=results,
+                           page=page,
+                           page_size=page_size,
+                           total_results=results_count,
+                           user_name=current_user.name)
 
 
 @app.route('/upload', methods=['POST'])

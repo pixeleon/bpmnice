@@ -52,7 +52,7 @@
     {% if results is none or results|length == 0 %}
     <p class="text-center fs-4">No files have been analyzed yet</p>
     {% else %}
-    <table class="table">
+    <table id="resultsTable" class="table">
         <thead>
         <tr>
             <th>ID</th>
@@ -80,6 +80,23 @@
         {% endfor %}
         </tbody>
     </table>
+    <ul class="pagination mt-3">
+        <li class="page-item">
+            {% if page > 1 %}
+            <a href="{{ url_for('hello', page=page-1, page_size=page_size) }}" class="page-link">Previous</a>
+            {% else %}
+            <a class="page-link disabled">Previous</a>
+            {% endif %}
+        </li>
+        <li class="page-item active disabled"><a class="page-link">{{page}}</a></li>
+        <li class="page-item">
+            {% if (page - 1) * page_size + results|length < total_results %}
+            <a href="{{ url_for('hello', page=page+1, page_size=page_size) }}" class="page-link">Next</a>
+            {% else %}
+            <a class="page-link disabled">Next</a>
+            {% endif %}
+        </li>
+    </ul>
     {% endif %}
 </div>
 
@@ -87,5 +104,4 @@
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/justgage/1.2.9/justgage.min.js"></script>
 <script src="../static/script.js"></script>
 <script src="../static/export.js"></script>
-
 {% endblock %}

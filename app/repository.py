@@ -1,6 +1,6 @@
 import os
 
-from sqlalchemy import create_engine, desc
+from sqlalchemy import create_engine, desc, func
 from sqlalchemy.orm import sessionmaker, aliased
 from werkzeug.security import generate_password_hash, check_password_hash
 
@@ -85,14 +85,39 @@ def get_all_results(user_id):
             AnalysisResult.score,
             AnalysisResult.created_time,
             file_alias.name.label("filename"),
-        ).filter_by(user_id=user_id).join(
-            file_alias, AnalysisResult.file_id == file_alias.id
-        ).order_by(desc(AnalysisResult.created_time)).limit(10).all()
+        ).filter_by(user_id=user_id).join(file_alias, AnalysisResult.file_id == file_alias.id).order_by(
+            desc(AnalysisResult.created_time)).all()
         return results
     except Exception as e:
         print(f"Failed to retrieve analysis results from DB: {e}")
     finally:
         session.close()
+
+
+def get_results_page(user_id, page=1, page_size=10):
+    session = Session()
+    try:
+        file_alias = aliased(AnalysedFile)
+        offset = (page - 1) * page_size
+        results = session.query(
+            AnalysisResult.id,
+            AnalysisResult.score,
+            AnalysisResult.total_tasks,
+            AnalysisResult.invalid_tasks,
+            AnalysisResult.created_time,
+            file_alias.name.label("filename"),
+        ).filter_by(user_id=user_id).join(file_alias, AnalysisResult.file_id == file_alias.id).order_by(
+            desc(AnalysisResult.created_time)).offset(offset).limit(page_size).all()
+        return results
+    except Exception as e:
+        print(f"Failed to retrieve analysis results page from DB: {e}")
+    finally:
+        session.close()
+
+
+def get_results_count(user_id):
+    with Session() as session:
+        return session.query(func.count(AnalysisResult.id)).filter_by(user_id=user_id).scalar()
 
 
 def get_analysis_file(analysis_id):

@@ -21,7 +21,6 @@ class AppUser(UserMixin, Base):
     created_time = Column(DateTime, server_default=func.now())
 
 
-@dataclass
 class AnalysisResult(Base):
     __tablename__ = RESULTS_TABLE_NAME
     id: int = Column(Integer, primary_key=True, autoincrement=True)
@@ -38,6 +37,7 @@ class AnalysedFile(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String(255), nullable=False)
     data = Column(LargeBinary, nullable=False)
+
 
 @dataclass
 class LabelScore:
