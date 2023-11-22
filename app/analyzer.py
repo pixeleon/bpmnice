@@ -35,7 +35,7 @@ def extract_activity_labels(bpmn_file):
 
 
 def get_activity_label(activity):
-    return re.sub(r'[\n\r\t]', ' ', activity.get('name'))
+    return re.sub(r'[\n\r\t]', ' ', activity.get('name')).strip()
 
 
 def calculate_labels_score(labels):
