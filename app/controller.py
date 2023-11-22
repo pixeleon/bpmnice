@@ -78,7 +78,7 @@ def download_analysis_file(analysis_id):
     if file:
         return send_file(
             io.BytesIO(file.data),
-            download_name=file.name,
+            download_name=f'analysis_{analysis_id}.bpmn',
             as_attachment=True
         )
     else:
