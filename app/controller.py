@@ -31,14 +31,19 @@ def load_user(user_id):
 
 
 @app.route("/")
+def home():
+    return render_template('home.html')
+
+
+@app.route("/history")
 @login_required
-def hello():
+def history():
     user_id = current_user.id
     page = request.args.get('page', default=1, type=int)
     page_size = request.args.get('page_size', default=10, type=int)
     results = repository.get_results_page(user_id, page, page_size)
     results_count = repository.get_results_count(user_id)
-    return render_template('home.html',
+    return render_template('history.html',
                            results=results,
                            page=page,
                            page_size=page_size,
@@ -62,7 +67,7 @@ def upload_file():
         return jsonify({'error': 'Invalid file extension in upload request'})
 
     if file:
-        user_id = current_user.id
+        user_id = current_user.id if current_user.is_authenticated else 0
         print('Valid file submitted: ', filename)
         return jsonify(analyzer.analyze_file(file, user_id))
 
@@ -93,7 +98,7 @@ def export_csv():
 
 
 @app.route('/export_xls', methods=['GET'])
-def export_data():
+def export_xls():
     data = repository.get_all_results(current_user.id)
     export_file = exporter.export_to_xls_file(data)
     return send_file(
@@ -125,7 +130,7 @@ def post_signup():
     if is_user_created:
         user = repository.get_app_user_by_credentials(email, password)
         login_user(user, remember=False)
-        return redirect(url_for('hello'))
+        return redirect(url_for('home'))
     else:
         flash('This email address already in use!')
         return redirect(url_for('signup'))
@@ -143,7 +148,12 @@ def post_login():
         return redirect(url_for('login'))
 
     login_user(user, remember=remember)
-    return redirect(url_for('hello'))
+    redirect_url = request.form.get('redirect')
+
+    if redirect_url:
+        return redirect(redirect_url)
+    else:
+        return redirect(url_for('home'))
 
 
 @app.route('/logout')

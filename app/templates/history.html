@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container">
+    <div class="row">
+        <h4>Analysis history</h4>
+        {% if results is none or results|length == 0 %}
+        <p class="fs-3 mb-0">No files have been analyzed yet</p>
+        {% endif %}
+    </div>
+</div>
+<div class="px-4">
+    {% if results %}
+    <table id="resultsTable" class="table">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Filename</th>
+            <th>Score</th>
+            <th>Invalid</th>
+            <th>Total</th>
+            <th class="d-none d-lg-table-cell">Date & Time</th>
+            <th style="text-align: right; padding-right: 25px">Action</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for result in results %}
+        <tr>
+            <td>{{ result['id'] }}</td>
+            <td class="text-truncate" style="max-width: 250px">{{result['filename']}}</td>
+            <td>{{ result['score'] }}</td>
+            <td>{{ result['invalid_tasks'] }}</td>
+            <td>{{ result['total_tasks'] }}</td>
+            <td class="d-none d-lg-table-cell">{{ result['created_time'].strftime('%d.%m.%Y %H:%M:%S')}}</td>
+            <td style="text-align: right">
+                <button type="button" class="btn btn-dark download-button" data-id="{{ result.id }}">Get file</button>
+            </td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    <div class="d-flex justify-content-between">
+        <ul class="pagination mb-0">
+            <li class="page-item">
+                {% if page > 1 %}
+                <a href="{{ url_for('history', page=page-1, page_size=page_size) }}" class="page-link">Previous</a>
+                {% else %}
+                <a class="page-link disabled">Previous</a>
+                {% endif %}
+            </li>
+            <li class="page-item active disabled"><a class="page-link">{{page}}</a></li>
+            <li class="page-item">
+                {% if (page - 1) * page_size + results|length < total_results %}
+                <a href="{{ url_for('history', page=page+1, page_size=page_size) }}" class="page-link">Next</a>
+                {% else %}
+                <a class="page-link disabled">Next</a>
+                {% endif %}
+            </li>
+        </ul>
+        <div class="mb-0">
+            <button class="btn btn-secondary" onclick="exportData('csv')">Export as CSV</button>
+            <button class="btn btn-success" onclick="exportData('xlsx')">Export as XLSX</button>
+        </div>
+    </div>
+    {% endif %}
+</div>
+<script src="../static/export.js"></script>
+<script src="../static/download.js"></script>
+{% endblock %}

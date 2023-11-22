@@ -16,6 +16,12 @@
         <span class="navbar-brand mb-0 h1">Hello, {{ current_user.name }}!</span>
         {% endif %}
         <div class="navbar-nav ms-auto h5 text-dark">
+            <a href="{{ url_for('home') }}" class="nav-link">
+                Analysis
+            </a>
+            <a href="{{ url_for('history') }}" class="nav-link">
+                History
+            </a>
             {% if not current_user.is_authenticated %}
             <a href="{{ url_for('login') }}" class="nav-link">
                 Login

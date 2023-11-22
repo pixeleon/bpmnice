@@ -23,6 +23,7 @@
                 </div>
             </div>
         </div>
+        <input type="hidden" name="redirect" value="{{ request.args.get('next') }}">
         <div class="alert alert-secondary" role="alert" style="margin-top: 1rem">
             Dont have an account yet? Go to <a href="{{ url_for('signup') }}" class="alert-link">signup page</a> to
             create one!

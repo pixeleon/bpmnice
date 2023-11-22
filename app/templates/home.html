@@ -38,70 +38,9 @@
             </div>
         </div>
     </div>
-    <div class="row">
-        <div class="d-flex justify-content-between align-items-center">
-            <h4 class="mt-4">Analysis history</h4>
-            <div class="mt-auto mb-2">
-                <button class="btn btn-secondary" onclick="exportData('csv')">Export as CSV</button>
-                <button class="btn btn-success" onclick="exportData('xlsx')">Export as XLSX</button>
-            </div>
-        </div>
-    </div>
-</div>
-<div class="px-4">
-    {% if results is none or results|length == 0 %}
-    <p class="text-center fs-4">No files have been analyzed yet</p>
-    {% else %}
-    <table id="resultsTable" class="table">
-        <thead>
-        <tr>
-            <th>ID</th>
-            <th>Filename</th>
-            <th>Score</th>
-            <th>Invalid</th>
-            <th>Total</th>
-            <th class="d-none d-lg-table-cell">Date & Time</th>
-            <th style="text-align: right; padding-right: 25px">Action</th>
-        </tr>
-        </thead>
-        <tbody>
-        {% for result in results %}
-        <tr>
-            <td>{{ result['id'] }}</td>
-            <td class="text-truncate" style="max-width: 250px">{{result['filename']}}</td>
-            <td>{{ result['score'] }}</td>
-            <td>{{ result['invalid_tasks'] }}</td>
-            <td>{{ result['total_tasks'] }}</td>
-            <td class="d-none d-lg-table-cell">{{ result['created_time'].strftime('%d.%m.%Y %H:%M:%S')}}</td>
-            <td style="text-align: right">
-                <button type="button" class="btn btn-dark download-button" data-id="{{ result.id }}">Get file</button>
-            </td>
-        </tr>
-        {% endfor %}
-        </tbody>
-    </table>
-    <ul class="pagination mt-3">
-        <li class="page-item">
-            {% if page > 1 %}
-            <a href="{{ url_for('hello', page=page-1, page_size=page_size) }}" class="page-link">Previous</a>
-            {% else %}
-            <a class="page-link disabled">Previous</a>
-            {% endif %}
-        </li>
-        <li class="page-item active disabled"><a class="page-link">{{page}}</a></li>
-        <li class="page-item">
-            {% if (page - 1) * page_size + results|length < total_results %}
-            <a href="{{ url_for('hello', page=page+1, page_size=page_size) }}" class="page-link">Next</a>
-            {% else %}
-            <a class="page-link disabled">Next</a>
-            {% endif %}
-        </li>
-    </ul>
-    {% endif %}
 </div>
 
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/raphael/2.1.4/raphael-min.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/justgage/1.2.9/justgage.min.js"></script>
 <script src="../static/script.js"></script>
-<script src="../static/export.js"></script>
 {% endblock %}
